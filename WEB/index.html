@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Law Town CFW | FiveM Roleplay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #FFB703; 
+            --primary-glow: rgba(255, 183, 3, 0.3);
+            --bg-dark: #0f0f11;
+            --bg-panel: #1a1a1d;
+            --bg-card: #222226;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a5;
+            --border-color: #2a2a30;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif; 
+            overflow-x: hidden;
+            transition: font-family 0.3s ease;
+            /* إخفاء المؤشر الافتراضي لتفعيل المؤشر المشع الجديد */
+            cursor: none; 
+        }
+
+        /* تعديل الروابط والأزرار لتخفي الماوس الافتراضي أيضاً لضمان استقرار التصميم الجديد */
+        a, button, .accordion-header, .nav-link, .store-tab, .remove-btn {
+            cursor: none !important;
+        }
+
+        /* --- ستايل المؤشر المشع الجديد --- */
+        .custom-cursor {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            position: fixed;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 10px var(--primary-color), 
+                        0 0 20px var(--primary-color), 
+                        0 0 30px var(--primary-color);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        /* تأثير تكبير المؤشر عند الإشارة لعناصر قابلة للضغط */
+        .custom-cursor.hovered {
+            width: 20px;
+            height: 20px;
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+
+        .top-navbar {
+            position: fixed; top: 0; left: 0; width: 100%; height: 80px;
+            background-color: rgba(26, 26, 29, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color); display: flex;
+            align-items: center; justify-content: space-between; padding: 0 2rem; z-index: 1000;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 15px; min-width: 200px; }
+        .logo-area h2 { color: var(--text-main); font-size: 1.5rem; letter-spacing: 1px; white-space: nowrap; }
+        .logo-area span { color: var(--primary-color); }
+
+        .nav-wrapper {
+            flex: 1; max-width: 500px; overflow-x: auto; scroll-behavior: smooth;
+            -ms-overflow-style: none; scrollbar-width: none; background-color: var(--bg-card);
+            padding: 5px 15px; border-radius: 30px; border: 1px solid var(--border-color); margin: 0 20px;
+            position: relative;
+        }
+        .nav-wrapper::-webkit-scrollbar { display: none; }
+
+        .nav-links { display: flex; align-items: center; gap: 5px; width: max-content; margin: 0 auto; }
+
+        .nav-link {
+            text-decoration: none; color: var(--text-muted); padding: 8px 18px;
+            border-radius: 20px; display: flex; align-items: center; gap: 8px;
+            transition: all 0.3s ease; font-weight: 600; font-size: 0.9rem; white-space: nowrap;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 183, 3, 0.15); color: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .header-actions { display: flex; align-items: center; gap: 15px; min-width: 200px; justify-content: flex-end; }
+
+        .btn {
+            padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 8px; transition: all 0.3s ease;
+            text-decoration: none; white-space: nowrap; font-size: 0.9rem;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: #000; box-shadow: 0 4px 15px var(--primary-glow); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--primary-glow); }
+        .btn-lang { background-color: transparent; color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; }
+        .btn-lang:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+        .main-content { padding: 100px 4rem 4rem 4rem; position: relative; }
+        .main-content::before {
+            content: ''; position: absolute; top: 0; right: 0; width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%); z-index: -1; pointer-events: none;
+        }
+
+        section { min-height: 80vh; margin-bottom: 6rem; padding-top: 60px; }
+        .section-title { font-size: 2.5rem; margin-bottom: 1rem; position: relative; display: inline-block; }
+        .section-title::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 50%; height: 3px; background-color: var(--primary-color); border-radius: 2px; }
+        [dir="rtl"] .section-title::after { left: auto; right: 0; }
+        .section-subtitle { color: var(--text-muted); margin-bottom: 3rem; font-size: 1.1rem; max-width: 600px; line-height: 1.6; }
+
+        #home { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 85vh; }
+        .hero-title { font-size: 4rem; font-weight: 700; margin-bottom: 1rem; }
+        .hero-title span { color: var(--primary-color); text-shadow: 0 0 20px var(--primary-glow); }
+
+        .about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .about-card, .founder-card, .store-card, .rules-container { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s ease; }
+        .about-card { padding: 2rem; }
+        .about-card:hover { transform: translateY(-5px); border-color: var(--primary-color); }
+        .about-card i { font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem; }
+        .about-card p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.5rem; }
+
+        .founders-grid { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; }
+        .founder-card { width: 280px; padding: 2.5rem 2rem; text-align: center; }
+        .founder-card:hover { border-color: var(--primary-color); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        img.founder-avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 1.5rem auto; border: 3px solid var(--primary-color); object-fit: cover; box-shadow: 0 0 15px var(--primary-glow); transition: transform 0.3s ease; }
+        .founder-card:hover img.founder-avatar { transform: scale(1.05); }
+        .founder-role { color: var(--primary-color); font-size: 0.8rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; }
+
+        .rules-accordion { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; text-align: right; }
+        .accordion-item { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; transition: all 0.3s ease; }
+        .accordion-item.active { border-color: var(--primary-color); box-shadow: 0 0 15px rgba(255, 183, 3, 0.1); }
+        .accordion-header { padding: 1.5rem 2rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 1.2rem; color: var(--text-main); background-color: rgba(0, 0, 0, 0.2); transition: all 0.3s ease; }
+        .accordion-header:hover { color: var(--primary-color); background-color: rgba(255, 183, 3, 0.05); }
+        .accordion-header i { transition: transform 0.3s ease; color: var(--primary-color); }
+        .accordion-item.active .accordion-header i.fa-chevron-down { transform: rotate(180deg); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .accordion-content-inner { padding: 2rem; border-top: 1px solid var(--border-color); }
+        .rules-list { list-style: none; }
+        .rules-list li { position: relative; padding-right: 25px; margin-bottom: 14px; color: var(--text-muted); line-height: 1.7; font-size: 0.95rem; }
+        [dir="rtl"] .rules-list li::before { content: '❖'; position: absolute; right: 0; top: 0; color: var(--primary-color); }
+        
+        [dir="ltr"] .rules-accordion { text-align: left; }
+        [dir="ltr"] .rules-list li { padding-right: 0; padding-left: 25px; text-align: left; }
+        [dir="ltr"] .rules-list li::before { content: '❖'; position: absolute; left: 0; top: 0; color: var(--primary-color); }
+        
+        .safe-zones-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .safe-zone-tag { background-color: rgba(255, 183, 3, 0.1); color: var(--primary-color); padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; border: 1px solid rgba(255, 183, 3, 0.3); }
+        .robbery-table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 25px; }
+        .robbery-table th, .robbery-table td { padding: 12px 15px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .robbery-table th { background-color: rgba(255, 183, 3, 0.1); color: var(--primary-color); font-weight: 700; }
+        .robbery-table tr:hover { background-color: rgba(255, 255, 255, 0.02); }
+
+        /* --- إضافات المتجر الجديد --- */
+        .store-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .store-tab { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 25px; border-radius: 30px; font-weight: 600; transition: all 0.3s ease; }
+        .store-tab:hover, .store-tab.active { background-color: rgba(255, 183, 3, 0.15); border-color: var(--primary-color); color: var(--primary-color); box-shadow: 0 0 10px var(--primary-glow); }
+        .store-content { display: none; }
+        .store-content.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .tier-title { color: var(--primary-color); font-size: 1.5rem; margin: 40px 0 20px; border-bottom: 2px dashed var(--border-color); padding-bottom: 10px; }
+        .store-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .store-card { padding: 2rem; text-align: center; display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+        .package-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; }
+        .package-price { font-size: 2rem; color: var(--primary-color); margin-bottom: 1.5rem; font-weight: 700; }
+        .package-features { list-style: none; color: var(--text-muted); margin-bottom: 2rem; flex-grow: 1; }
+        .package-features li { margin-bottom: 10px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px;}
+
+        /* --- ستايل سلة المشتريات --- */
+        .cart-panel {
+            position: fixed; bottom: 30px; right: 30px; width: 320px;
+            background-color: var(--bg-panel); border: 1px solid var(--primary-color);
+            border-radius: 12px; padding: 20px; z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: none; flex-direction: column; gap: 15px;
+        }
+        [dir="rtl"] .cart-panel { right: auto; left: 30px; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; font-weight: 700; font-size: 1.2rem; }
+        .cart-items { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .cart-items::-webkit-scrollbar { width: 5px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-dark); padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        .cart-item-info { display: flex; flex-direction: column; }
+        .cart-item-price { color: var(--primary-color); font-weight: 700; }
+        .remove-btn { background: transparent; border: none; color: #ff4d4d; font-size: 1.2rem; transition: transform 0.2s; }
+        .remove-btn:hover { transform: scale(1.1); color: #ff1a1a; }
+        .cart-footer { border-top: 1px solid var(--border-color); padding-top: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .cart-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.2rem; }
+
+        @media (max-width: 900px) {
+            .top-navbar { flex-wrap: wrap; height: auto; padding: 15px; justify-content: center; gap: 15px; }
+            .logo-area, .header-actions { min-width: auto; }
+            .nav-wrapper { max-width: 100%; order: 3; margin: 10px 0 0 0; }
+            .main-content { padding: 160px 1.5rem 2rem 1.5rem; }
+            body { cursor: default; } /* إعادة الماوس الطبيعي للهواتف لسهولة الاستخدام */
+            .custom-cursor { display: none; }
+            .cart-panel { bottom: 10px; right: 10px; left: 10px; width: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="custom-cursor" id="customCursor"></div>
+
+    <header class="top-navbar">
+        <div class="logo-area"><h2>Law Town <span>CFW</span></h2></div>
+        <div class="nav-wrapper" id="navRoll">
+            <nav class="nav-links">
+                <a href="#home" class="nav-link active" data-en='<i class="fas fa-home"></i> Home' data-ar='<i class="fas fa-home"></i> الرئيسية'><i class="fas fa-home"></i> Home</a>
+                <a href="#about" class="nav-link" data-en='<i class="fas fa-info-circle"></i> About' data-ar='<i class="fas fa-info-circle"></i> من نحن'><i class="fas fa-info-circle"></i> About</a>
+                <a href="#founders" class="nav-link" data-en='<i class="fas fa-crown"></i> Founders' data-ar='<i class="fas fa-crown"></i> الإدارة'><i class="fas fa-crown"></i> Founders</a>
+                <a href="#rules" class="nav-link" data-en='<i class="fas fa-book"></i> Rules' data-ar='<i class="fas fa-book"></i> القوانين'><i class="fas fa-book"></i> Rules</a>
+                <a href="#store" class="nav-link" data-en='<i class="fas fa-shopping-cart"></i> Store' data-ar='<i class="fas fa-shopping-cart"></i> المتجر'><i class="fas fa-shopping-cart"></i> Store</a>
+            </nav>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-lang" id="langToggleBtn" onclick="toggleLanguage()">AR</button>
+            <a href="https://discord.gg/5Ua35WJs" target="_blank" class="btn btn-primary"><i class="fab fa-discord"></i> Discord</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section id="home">
+            <h1 class="hero-title" data-en="Welcome to <br><span>Law Town CFW</span>" data-ar="مرحباً بكم في <br><span>Law Town CFW</span>">Welcome to <br><span>Law Town CFW</span></h1>
+            <p class="section-subtitle" style="text-align: center; margin: 0 auto 2rem auto;" data-en="The most immersive FiveM roleplay experience." data-ar="أفضل تجربة لعب أدوار (رول بلاي) في فايف إم.">The most immersive FiveM roleplay experience.</p>
+            <a href="#" class="btn btn-primary" style="padding: 15px 30px; font-size: 1.1rem;" data-en="Connect to Server" data-ar="ادخل السيرفر">Connect to Server</a>
+        </section>
+
+        <section id="about">
+            <h2 class="section-title" data-en="What is Law Town?" data-ar="ما هو لاو تاون؟">What is Law Town?</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3 data-en="Optimized Performance" data-ar="أداء مُحسّن وسلس">Optimized Performance</h3>
+                    <p data-en="Stable 60+ FPS." data-ar="فريمات ثابتة فوق 60 بفضل التحسينات البرمجية.">Stable 60+ FPS.</p>
+                </div>
+                <div class="about-card">
+                    <i class="fas fa-users-cog"></i>
+                    <h3 data-en="Active Staff Team" data-ar="طاقم إدارة متفاعل">Active Staff Team</h3>
+                    <p data-en="24/7 moderation." data-ar="دعم وإشراف على مدار الساعة لضمان بيئة لعب عادلة.">24/7 moderation.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="founders">
+            <h2 class="section-title" data-en="Meet Our Leadership" data-ar="تعرف على الإدارة">Meet Our Leadership</h2>
+            <div class="founders-grid">
+                <div class="founder-card">
+                    <img src="nyx.jpg" class="founder-avatar" alt="NYX">
+                    <div class="founder-role" data-en="Dev & Owner" data-ar="مطور ومالك">Dev & Owner</div>
+                    <h3>NYX</h3>
+                </div>
+                <div class="founder-card">
+                    <img src="pro.jfif" class="founder-avatar" alt="Abu Abdullah">
+                    <div class="founder-role" data-en="Dev & Owner" data-ar="مطور ومالك">Dev & Owner</div>
+                    <h3>Abu Abdullah</h3>
+                </div>
+            </div>
+        </section>
+
+        <section id="rules">
+            <h2 class="section-title" data-en="Server Rules" data-ar="قوانين السيرفر">قوانين السيرفر</h2>
+            <p class="section-subtitle" style="margin: 0 auto 3rem auto; text-align: center;" data-en="Please read carefully. Ignorance of the rules is not an excuse." data-ar="الرجاء القراءة بعناية. الجهل بالقوانين لا يعفيك من العقوبة.">الرجاء القراءة بعناية. الجهل بالقوانين لا يعفيك من العقوبة.</p>
+            
+            <div class="rules-accordion">
+                
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="<i class='fas fa-book-open'></i> Basic Roleplay Concepts" data-ar="<i class='fas fa-book-open'></i> مفاهيم الرول بلاي الأساسية"><i class="fas fa-book-open"></i> مفاهيم الرول بلاي الأساسية</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <ul class="rules-list">
+                                <li data-ar="<strong>تعريف الحياة الواقعية:</strong> يجب عليك تقمص الشخصية داخل الرول بلاي سواء كانت شخصيتك - مسعف، محامي، عسكري، عصابه، مواطن سواءً شاب او رجل مسن." data-en="<strong>Real Life Definition (RP):</strong> You must stay in character at all times."><strong>تعريف الحياة الواقعية:</strong> يجب عليك تقمص الشخصية داخل الرول بلاي سواء كانت شخصيتك - مسعف، محامي، عسكري، عصابه، مواطن سواءً شاب او رجل مسن.</li>
+                                <li data-ar="<strong>تعريف تقدير الحياة:</strong> يجب عليك تقدير موقفك وحياتك في اي حالة كنت متواجد فيها." data-en="<strong>Value of Life:</strong> You must value your life and respect scary situations."><strong>تعريف تقدير الحياة:</strong> يجب عليك تقدير موقفك وحياتك في اي حالة كنت متواجد فيها.</li>
+                                <li data-ar="<strong>VDM:</strong> يمنع منعاً باتا استخدام المركبة ك سلاح." data-en="<strong>VDM:</strong> Vehicle Deathmatch is strictly prohibited. Do not use cars as weapons."><strong>VDM:</strong> يمنع منعاً باتا استخدام المركبة ك سلاح.</li>
+                                <li data-ar="<strong>RDM:</strong> القتل العشوائي بدون أي سيناريو مسبق أو مبرر واقعي ممنوع تماماً." data-en="<strong>RDM:</strong> Random Deathmatch is completely forbidden."><strong>RDM:</strong> القتل العشوائي بدون أي سيناريو مسبق أو مبرر واقعي ممنوع تماماً.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="<i class='fas fa-gavel'></i> General Rules (1-49)" data-ar="<i class='fas fa-gavel'></i> القوانين العامة (49 قانون)"><i class="fas fa-gavel"></i> القوانين العامة (49 قانون)</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <ul class="rules-list">
+                                <li data-ar="[1] - بقياسه بالحياة الواقعية [ RP ] يجب عليك فهم معنى القتل العشوائي." data-en="[1] Understand the full definition of RDM under RP guidelines.">[1] - بقياسه بالحياة الواقعية [ RP ] يجب عليك فهم معنى القتل العشوائي.</li>
+                                <li data-ar="[2] - يمنع التحدث بالسياسه والاعراض والدين وايضا المضايقات وفي حال تم رصد اياً منها ( باند نهائي )" data-en="[2] No politics, religion, honor talk, or harassment (Permanent Ban).">[2] - يمنع التحدث بالسياسه والاعراض والدين وايضا المضايقات وفي حال تم رصد اياً منها ( باند نهائي )</li>
+                                <li data-ar="[3] - يمنع تقليد الكركترات والاسماء الموجوده بالسيرفر بأي طريقة كانت" data-en="[3] Copying characters or existing server names is forbidden.">[3] - يمنع تقليد الكركترات والاسماء الموجوده بالسيرفر بأي طريقة كانت</li>
+                                <li data-ar="[4] - يجب وضع اسم كركتر واقعي" data-en="[4] You must use a realistic character name.">[4] - يجب وضع اسم كركتر واقعي</li>
+                                <li data-ar="[5] - في حال حضرت سيناريو باحدى كركتراتك , يمنع حضور كركتر اخر لك بالسيناريو نفسه" data-en="[5] Logging in with another character to join the same ongoing scenario is forbidden.">[5] - في حال حضرت سيناريو باحدى كركتراتك , يمنع حضور كركتر اخر لك بالسيناريو نفسه</li>
+                                <li data-ar="[6] - يمنع دخول البيت او الشقه اثناء السيناريو" data-en="[6] Entering houses or apartments during an active scenario is forbidden.">[6] - يمنع دخول البيت او الشقه اثناء السيناريو</li>
+                                <li data-ar="[7] - يجب تشغيل برنامج التصوير مع وجود الصوت ( 20 د) اثناء اللعب عبر برنامج جيفورس ويجب ان يكون على الشاشة كاملة ويمنع استخدام خاصية القيم كابتشر وسيتم محاسبتك في حال عدم وجوده" data-en="[7] Recording via GeForce (Full Screen, with audio, 20 mins buffer) is mandatory.">[7] - يجب تشغيل برنامج التصوير مع وجود الصوت ( 20 د) اثناء اللعب عبر برنامج جيفورس ويجب ان يكون على الشاشة كاملة ويمنع استخدام خاصية القيم كابتشر وسيتم محاسبتك في حال عدم وجوده</li>
+                                <li data-ar="[8] - يمنع التدخل في سيناريو قائم" data-en="[8] Interfering in an ongoing scenario is prohibited.">[8] - يمنع التدخل في سيناريو قائم</li>
+                                <li data-ar="[9] - يمنع لبس الملابس الجيشية والعسكريه ومن ضمنها الحزام العسكري" data-en="[9] Wearing military or police uniforms/belts is prohibited.">[9] - يمنع لبس الملابس الجيشية والعسكريه ومن ضمنها الحزام العسكري</li>
+                                <li data-ar="[10] - يمنع التعرض للمسعفين الا في حال تعرض لك ايضا يمنع سرقة وتدمير اغراض الشرطة والمسعفيين" data-en="[10] Harming EMS or stealing/destroying police/EMS items is forbidden.">[10] - يمنع التعرض للمسعفين الا في حال تعرض لك ايضا يمنع سرقة وتدمير اغراض الشرطة والمسعفيين</li>
+                                <li data-ar="[11] - تمنع الشخصنة بجميع اشكالها وانواعها" data-en="[11] Taking IC issues into OOC (Personalization) is forbidden.">[11] - تمنع الشخصنة بجميع اشكالها وانواعها</li>
+                                <li data-ar="[12] - يمنع التواصل الغير شرعي مثل : الدسكورد والبرامج المشابه له ( Meta Gaming)" data-en="[12] Meta Gaming via Discord or other apps is strictly forbidden.">[12] - يمنع التواصل الغير شرعي مثل : الدسكورد والبرامج المشابه له ( Meta Gaming)</li>
+                                <li data-ar="[13] - يمنع إرتداء او إستعمال اي خوذة اثناء مشاركتك في اي إطلق ناري" data-en="[13] Wearing or using any helmet during bullet fire fights is forbidden.">[13] - يمنع إرتداء او إستعمال اي خوذة اثناء مشاركتك في اي إطلق ناري</li>
+                                <li data-ar="[14] - يمنع استخدام اي جرافيكس او برنامج خارجي او ملفات تساعد او تسهل طريقة اللعب" data-en="[14] Using external software, advantage graphics, or cheats is prohibited.">[14] - يمنع استخدام اي جرافيكس او برنامج خارجي او ملفات تساعد او تسهل طريقة اللعب</li>
+                                <li data-ar="[15] - يمنع على إي لاعب حرق او تفجير جثة ونقلها , يمنع إهانة اي لاعب بعد قتله" data-en="[15] Burning, exploding or disrespecting/insulting dead bodies is forbidden.">[15] - يمنع على إي لاعب حرق او تفجير جثة ونقلها , يمنع إهانة اي لاعب بعد قتله</li>
+                                <li data-ar="[16] - يمنع تغيير ملامح وجهك او شعرك بعد قيامك بعملية اجرامية منعا باتا" data-en="[16] Changing facial features or hair after a criminal act is strictly prohibited.">[16] - يمنع تغيير ملامح وجهك او شعرك بعد قيامك بعملية اجرامية منعا باتا</li>
+                                <li data-ar="[17] - يمنع على الشخص الميت اثناء السيناريو العودة إليه مره اخرى" data-en="[17] Returning to a scenario after dying in it is forbidden.">[17] - يمنع على الشخص الميت اثناء السيناريو العودة إليه مره اخرى</li>
+                                <li data-ar="[18] - عدم ترابط شخصيتك الاولى , بالشخصية الثانية , يمنع تكرار الاسامي بين الكركترات" data-en="[18] Your characters must have completely separate lives and different names.">[18] - عدم ترابط شخصيتك الاولى , بالشخصية الثانية , يمنع تكرار الاسامي بين الكركترات</li>
+                                <li data-ar="[19] - يجب عليك تقمص شخصيتك مع الكل حتى ولو خويك بمعنى لو انك عسكري و خويك مجرم م تتساهل معه ابداً" data-en="[19] Roleplay properly even with friends. A cop must not tolerate a criminal friend.">[19] - يجب عليك تقمص شخصيتك مع الكل حتى ولو خويك بمعنى لو انك عسكري و خويك مجرم م تتساهل معه ابداً</li>
+                                <li data-ar="[20] - في حال عندك شخصيه وبتغير الصوت حقها في اي برنامج يجب ان الصوت يبقى ثابت على هذي الشخصيه او الكاركتر" data-en="[20] Voice changers must stay consistent per character.">[20] - في حال عندك شخصيه وبتغير الصوت حقها في اي برنامج يجب ان الصوت يبقى ثابت على هذي الشخصيه او الكاركتر</li>
+                                <li data-ar="[21] - يجب عليك تقدير قيمة مركبتك والقيادة بشكل سليم و تجنب صدم الاخرين" data-en="[21] Drive safely, value your vehicle and avoid crashing into others.">[21] - يجب عليك تقدير قيمة مركبتك والقيادة بشكل سليم و تجنب صدم الاخرين</li>
+                                <li data-ar="[22] - الكذب بالمسطلحات التالية { سحر او باخذ حبه او صداع والخ } .. يعرضك للمحاسبة الادارية" data-en="[22] Using terms like 'magic, headache, taking pills' to break RP is administrative abuse.">[22] - الكذب بالمسطلحات التالية { سحر او باخذ حبه او صداع والخ } .. يعرضك للمحاسبة الادارية</li>
+                                <li data-ar="[23] - ( ممنوع الكلام المشفر بجميع انواعه بمعنى ) اي كلام له اكثر من معنى ممنوع" data-en="[23] Coded/Double-meaning words are prohibited.">[23] - ( ممنوع الكلام المشفر بجميع انواعه بمعنى ) اي كلام له اكثر من معنى ممنوع</li>
+                                <li data-ar="[24] - يمنع منعاً باتا استخدام ادوات الغش كالقلتشات او الثغرات او استغلال اوامر الشات ( باند نهائي )" data-en="[24] Cheating, exploiting glitches or chat commands means a permanent ban.">[24] - يمنع منعاً باتا استخدام ادوات الغش كالقلتشات او الثغرات او استغلال اوامر الشات ( باند نهائي )</li>
+                                <li data-ar="[25] - عند الموت او التحلل يجب عليك نسيان الاشخاص المتسببين بذلك فقط" data-en="[25] Upon death/respawn, you must completely forget the people who caused it (NLR).">[25] - عند الموت او التحلل يجب عليك نسيان الاشخاص المتسببين بذلك فقط</li>
+                                <li data-ar="[26] - ممنوع الستريم سنايب ( باند نهائي )" data-en="[26] Stream Sniping results in a permanent ban.">[26] - ممنوع الستريم سنايب ( باند نهائي )</li>
+                                <li data-ar="[27] - عند حدوث اعادة تشغيل للسيرفر { اعصار } وكنت تحت رهن الاعتقال يجب عليك الرجوع وتسليم نفسك لمركز الشرطة و ان كنت رهينه في سناريو تكمل السناريو بعد اعادة التشغيل السيرفر" data-en="[27] If a tsunami happens during arrest or hostage situations, you must return and resume.">[27] - عند حدوث اعادة تشغيل للسيرفر { اعصار } وكنت تحت رهن الاعتقال يجب عليك الرجوع وتسليم نفسك لمركز الشرطة و ان كنت رهينه في سناريو تكمل السناريو بعد اعادة التشغيل السيرفر</li>
+                                <li data-ar="[28] - يمنع منعا باتا التحدث عن امور خارج الرول بلاي او التلميح لها" data-en="[28] Speaking about out-of-character (OOC) elements or hinting at them is forbidden.">[28] - يمنع منعا باتا التحدث عن امور خارج الرول بلاي او التلميح لها</li>
+                                <li data-ar="[29] - يجب الالتزام بالذوق العام في الملابس بشكل كامل" data-en="[29] Respect public decency with clothing choices.">[29] - يجب الالتزام بالذوق العام في الملابس بشكل كامل</li>
+                                <li data-ar="[30] - في حال مشاركتك في سيناريو معين مهما كان نوعه يمنع عليك الخروج من السيرفر الا بعد مرور مالا يقل عن (١٠دقائق) من انتهاء السيناريو بالكامل وفي حال خروجك من وسط السيناريو او الحاله او قبل استكمالها سيتم محاسبتك بشكل فوري (بباند نهائي)" data-en="[30] Combat logging or exiting before 10 mins post-scenario means a permanent ban.">[30] - في حال مشاركتك في سيناريو معين مهما كان نوعه يمنع عليك الخروج من السيرفر الا بعد مرور مالا يقل عن (١٠دقائق) من انتهاء السيناريو بالكامل وفي حال خروجك من وسط السيناريو او الحاله او قبل استكمالها سيتم محاسبتك بشكل فوري (بباند نهائي)</li>
+                                <li data-ar="[31] - يمنع قتل اي شخص لسبب تافه او لأجل أمر شخصي" data-en="[31] Killing anyone for weak or petty personal reasons is forbidden.">[31] - يمنع قتل اي شخص لسبب تافه او لأجل أمر شخصي</li>
+                                <li data-ar="[32] - لا يسمح بإرتداء عدة الغوص خارج البحر ومن يخالف ذلك سيتم محاسبته" data-en="[32] Wearing diving gear outside the sea is forbidden.">[32] - لا يسمح بإرتداء عدة الغوص خارج البحر ومن يخالف ذلك سيتم محاسبته</li>
+                                <li data-ar="[33] - يمنع حمل اللاعب اثناء ركوب الدباب وايضا المركبه" data-en="[33] Carrying a player while riding bikes/motorcycles or driving is prohibited.">[33] - يمنع حمل اللاعب اثناء ركوب الدباب وايضا المركبه</li>
+                                <li data-ar="[34] - اي اساءة لشخص بغير وجه حق وبشكل متكرر او تقديح دون سبب مقنع راح يعرضك للمحاسبة الشديدة" data-en="[34] Repeated verbal insults or toxicity without real reason leads to heavy punishment.">[34] - اي اساءة لشخص بغير وجه حق وبشكل متكرر او تقديح دون سبب مقنع راح يعرضك للمحاسبة الشديدة</li>
+                                <li data-ar="[35] - يمنع منعأ باتا معالجة شخص في حال تواجد مسعفين في المستشفى" data-en="[35] Healing someone yourself when EMS are present at the hospital is forbidden.">[35] - يمنع منعأ باتا معالجة شخص في حال تواجد مسعفين في المستشفى</li>
+                                <li data-ar="[36] - يجب عليك تقدير الموقف بأي شكل من الأشكال وتحت أي ظرف كان" data-en="[36] Always respect the situation and evaluate realistically under any circumstance.">[36] - يجب عليك تقدير الموقف بأي شكل من الأشكال وتحت أي ظرف كان</li>
+                                <li data-ar="[37] - يمنع منعًا باتًا تواجدك بالسيرفر ودخول اي بث للسيرفر" data-en="[37] Watching server streams while active inside the server is forbidden.">[37] - يمنع منعًا باتًا تواجدك بالسيرفر ودخول اي بث للسيرفر</li>
+                                <li data-ar="[38] - يمنع التلفظ بالالفاظ السوقية بدون اي سبب مقنع وفي حال تم رصد ذلك سيتم محاسبتك محاسبة ادارية صارمة" data-en="[38] Using bad/slang street words without proper RP reason faces administrative actions.">[38] - يمنع التلفظ بالالفاظ السوقية بدون اي سبب مقنع وفي حال تم رصد ذلك سيتم محاسبتك محاسبة ادارية صارمة</li>
+                                <li data-ar="[39] - يمنع عليك منعا باتا طلق النار في اي منطقه حكومية" data-en="[39] Shooting inside or near any government area is strictly forbidden.">[39] - يمنع عليك منعا باتا طلق النار في اي منطقه حكومية</li>
+                                <li data-ar="[40] - يجب على جميع اللاعبين لبس ملابس مناسبة لأعمالهم, وتطبيق 'الار بي' المناسب للوظيفة" data-en="[40] Dress appropriately for your job and follow its specific roleplay duties.">[40] - يجب على جميع اللاعبين لبس ملابس مناسبة لأعمالهم, وتطبيق "الار بي" المناسب للوظيفة</li>
+                                <li data-ar="[41] - يمنع منعأ باتا السرقه او الاجرام قبل الاعصار باستثناء الحالات التالية:<br>البنوك الكبرى (Blane county, Jewelry, Maze Bank) يمنع سرقتها قبل الاعصار بـ 45 دقيقة.<br>السرقات المتوسطة (Digital Den, Laundromat, Cash Exchange, Merry Weather) يمنع سرقتها قبل الاعصار بـ 30 دقيقة.<br>أي سرقة أخرى يحق لك سرقتها قبل 15 دقيقة من الاعصار." data-en="[41] Pre-tsunami robbery rules: Large 45m before, medium 30m, others 15m.">[41] - يمنع منعأ باتا السرقه او الاجرام قبل الاعصار باستثناء الحالات التالية:<br>البنوك الكبرى (Blane county, Jewelry, Maze Bank) قبل 45 د.<br>السرقات المتوسطة (Digital Den, Laundromat, Cash Exchange, Merry Weather) قبل 30 د.<br>أي سرقة أخرى يحق لك سرقتها قبل 15 دقيقة من الاعصار.</li>
+                                <li data-ar="[42] - يمنع مشاركتك لاي من معلوماتك او حساباتك الشخصية ( ستيم - روك ستار - فايف ام ) مع اي شخص كان واستخدامها لالدخول للسيرفر يعرضكم جميعا للباند النهائي ويندرج ذلك تحت تعدد الحسابات" data-en="[42] Sharing accounts (Steam, Rockstar, FiveM) results in a permanent ban for multi-accounting.">[42] - يمنع مشاركتك لاي من معلوماتك او حساباتك الشخصية ( ستيم - روك ستار - فايف ام ) مع اي شخص كان واستخدامها لالدخول للسيرفر يعرضكم جميعا للباند النهائي ويندرج ذلك تحت تعدد الحسابات</li>
+                                <li data-ar="[43] - يمنع على جميع اللاعبين التخريم أو الطلق من خلف الجدار في جميع الأماكن" data-en="[43] Wallbanging or shooting through walls anywhere is forbidden.">[43] - يمنع على جميع اللاعبين التخريم أو الطلق من خلف الجدار في جميع الأماكن</li>
+                                <li data-ar="[44] - يمنع الاحتماء والاستفزاز بالمناطق الآمنة ، ويحق استكمال السيناريو في حال الاحتماء بمناطق امنه الا مركز الشرطة" data-en="[44] Fleeing to safe zones or provoking there is forbidden. Scenarios can continue unless it is PD.">[44] - يمنع الاحتماء والاستفزاز بالمناطق الآمنة ، ويحق استكمال السيناريو في حال الاحتماء بمناطق امنه الا مركز الشرطة</li>
+                                <li data-ar="[45] - يمنع سرقة اغراض الشرطة او المسعفين" data-en="[45] Stealing items from PD or EMS is forbidden.">[45] - يمنع سرقة اغراض الشرطة او المسعفين</li>
+                                <li data-ar="[46] - يمنع القفز بالمركبة قفزات انتحاريه" data-en="[46] Making suicidal car jumps with vehicles is forbidden.">[46] - يمنع القفز بالمركبة قفزات انتحاريه</li>
+                                <li data-ar="[47] - يجب ان يكون التهديد بشكل مباشر حيث لا يمكنك التهديد وانت بداخل المركبة" data-en="[47] Threats must be direct; you cannot threaten someone while sitting inside a car.">[47] - يجب ان يكون التهديد بشكل مباشر حيث لا يمكنك التهديد وانت بداخل المركبة</li>
+                                <li data-ar="[48] - في حال تم تهديد المواطن وانصاع لاوامرك لا يحق لك قتله تحت اي ظرف كان ، في حال عدم الانصياع ومحاولة المقاومة يحق لك قتله" data-en="[48] If a civilian complies with your threat, you cannot kill them. If they resist, you may kill them.">[48] - في حال تم تهديد المواطن وانصاع لاوامرك لا يحق لك قتله تحت اي ظرف كان ، في حال عدم الانصياع ومحاولة المقاومة يحق لك قتله</li>
+                                <li data-ar="[49] - يمنع انتحال شخصية اي وظيفة حكومية لأي غرض كان سوا نصب أو غيره ( عقاري - موظف ورشة - موظف مطعم وغيرها )" data-en="[49] Impersonating government or business jobs (Real estate, mechanic, chef, etc.) is forbidden.">[49] - يمنع انتحال شخصية اي وظيفة حكومية لأي غرض كان سوا نصب أو غيره ( عقاري - موظف ورشة - موظف مطعم وغيرها )</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="<i class='fas fa-shield-alt'></i> Safe Zones" data-ar="<i class='fas fa-shield-alt'></i> المناطق الآمنة"><i class="fas fa-shield-alt"></i> المناطق الآمنة</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p style="color: var(--text-muted); margin-bottom: 15px;" data-en="It is strictly prohibited to commit crimes, scam, or start fights in the following zones:" data-ar="يمنع منعاً باتاً الإجرام، النصب، أو افتعال المشاكل داخل هذه المناطق:">يمنع منعاً باتاً الإجرام، النصب، أو افتعال المشاكل داخل هذه المناطق:</p>
+                            <div class="safe-zones-tags">
+                                <span class="safe-zone-tag">مراكز الشرطة</span>
+                                <span class="safe-zone-tag">المستشفيات</span>
+                                <span class="safe-zone-tag">الشقق العامة</span>
+                                <span class="safe-zone-tag">المطاعم والكافيهات</span>
+                                <span class="safe-zone-tag">ورشات تصليح المركبات</span>
+                                <span class="safe-zone-tag">مركز الوظائف</span>
+                                <span class="safe-zone-tag">العقار</span>
+                                <span class="safe-zone-tag">السجن</span>
+                                <span class="safe-zone-tag">المحكمة</span>
+                                <span class="safe-zone-tag">حجز المركبات</span>
+                                <span class="safe-zone-tag">معارض السيارات</span>
+                                <span class="safe-zone-tag">تأجير السيارات</span>
+                                <span class="safe-zone-tag">كازينو</span>
+                                <span class="safe-zone-tag">ايكيا</span>
+                                <span class="safe-zone-tag">مصنع الدجاج</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="<i class='fas fa-mask'></i> Criminal Rules (1-32)" data-ar="<i class='fas fa-mask'></i> قوانين الإجرام (32 قانون)"><i class="fas fa-mask"></i> قوانين الإجرام (32 قانون)</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <ul class="rules-list">
+                                <li data-ar="[1] - يجب عليك فهم معنى الحياة الواقعية سواء كنت مجرم او رهينة وذلك بقياسها بالحياة الواقعية" data-en="[1] Value your life and understand RP whether you are a criminal or a hostage.">[1] - يجب عليك فهم معنى الحياة الواقعية سواء كنت مجرم او رهينة وذلك بقياسها بالحياة الواقعية</li>
+                                <li data-ar="[2] - يمنع الاتفاق مع اي شخص ليصبح رهينة" data-en="[2] Fake or pre-arranged hostages are strictly forbidden.">[2] - يمنع الاتفاق مع اي شخص ليصبح رهينة</li>
+                                <li data-ar="[4] - مدة رهن الرهينة ( 20 د) الا في حال بدأ السيناريو يلغى الوقت" data-en="[4] Hostage holding limit is 20 minutes max until the scenario begins.">[4] - مدة رهن الرهينة ( 20 د) الا في حال بدأ السيناريو يلغى الوقت</li>
+                                <li data-ar="[5] - يمنع المتاجره بالممنوعات في المناطق الامنه و يمنع النصب والاحتيال في المناطق الامنه" data-en="[5] No illegal trading, scamming or fraud in Safe Zones.">[5] - يمنع المتاجره بالممنوعات في المناطق الامنه و يمنع النصب والاحتيال في المناطق الامنه</li>
+                                <li data-ar="[6] - يمنع سرقة المواطن الا بسبب وجود عداوه واثبات العداوه باكثر من موقف ( 3 مواقف وتكون مثبته بالمقاطع )" data-en="[6] Robbing citizens requires proven hostility (3 different video-recorded clips).">[6] - يمنع سرقة المواطن الا بسبب وجود عداوه واثبات العداوه باكثر من موقف ( 3 مواقف وتكون مثبته بالمقاطع )</li>
+                                <li data-ar="[7] - حد المجموعات او العائلات المسموح فقط 10 اشخاص" data-en="[7] Family or small group limit inside a scenario is 10 players max.">[7] - حد المجموعات او العائلات المسموح فقط 10 اشخاص</li>
+                                <li data-ar="[8] - يمنع تحالف العصابات ضد الداخلية او ضد مجموعة او عصابة اخرى باستثناء السرقة ويجب الالتزام بعدد السرقة" data-en="[8] Gang alliances against PD or other gangs are forbidden except during robberies.">[8] - يمنع تحالف العصابات ضد الداخلية او ضد مجموعة او عصابة اخرى باستثناء السرقة ويجب الالتزام بعدد السرقة</li>
+                                <li data-ar="[9] - يمنع منعا باتا خطف رهينه بغاية التوجه للسجن والتفاوض مع العساكر لاطلاق سراح اي سجين" data-en="[9] Kidnapping a hostage to negotiate jailbreaks with PD is completely forbidden.">[9] - يمنع منعا باتا خطف رهينه بغاية التوجه للسجن والتفاوض مع العساكر لاطلاق سراح اي سجين</li>
+                                <li data-ar="[10] - يمنع الاعتداء على مفاوض الشرطة في السيناريو ويمنع الاعتداء على مفاوض المجرمين" data-en="[10] Harming police or criminal negotiators during negotiations is forbidden.">[10] - يمنع الاعتداء على مفاوض الشرطة في السيناريو ويمنع الاعتداء على مفاوض المجرمين</li>
+                                <li data-ar="[11] - يمنع مقاومة السلاح الناري بسلاح ابيض مهما كانت الحاله + يمنع مقاومة اي سلاح ثقيل بسلاح خفيف مثل الجلوك" data-en="[11] Do not resist firearms with melee, or heavy guns with light ones (Glock).">[11] - يمنع مقاومة السلاح الناري بسلاح ابيض مهما كانت الحاله + يمنع مقاومة اي سلاح ثقيل بسلاح خفيف مثل الجلوك</li>
+                                <li data-ar="[12] - يمنع اطلاق النار او خطف العسكري في اي قضية مروريه" data-en="[12] Shooting or kidnapping an officer during a basic traffic stop is forbidden.">[12] - يمنع اطلاق النار او خطف العسكري في اي قضية مروريه</li>
+                                <li data-ar="[13] - يمنع منعاً باتاً مشاركة الرهينة للخاطفين في نص السيناريو" data-en="[13] Hostages must not assist or help the kidnappers in any scenario.">[13] - يمنع منعاً باتاً مشاركة الرهينة للخاطفين في نص السيناريو</li>
+                                <li data-ar="[14] - يمنع تقليد ملابس احد العصابات" data-en="[14] Copying or wearing another gang's colors/clothes is forbidden.">[14] - يمنع تقليد ملابس احد العصابات</li>
+                                <li data-ar="[15] - يمنع الخطف والتهديد في حال وجود مواطن او اثنين من المدنيين او اكثر" data-en="[15] Kidnapping/threatening is forbidden if 2 or more active citizens are watching.">[15] - يمنع الخطف والتهديد في حال وجود مواطن او اثنين من المدنيين او اكثر</li>
+                                <li data-ar="[16] - يمنع التعدي او اختطاف سائق السطحه او طلب تاكسي او عسكري او ميكانيكي او محامي او اي شخص في اي وظيفة حكوميه" data-en="[16] Kidnapping public workers (Tow, taxi, EMS, PD, mechanics, lawyers) is forbidden.">[16] - يمنع التعدي او اختطاف سائق السطحه او طلب تاكسي او عسكري او ميكانيكي او محامي او اي شخص في اي وظيفة حكوميه</li>
+                                <li data-ar="[17] - يُمنع على إي فرد او جماعة السرقة ثم الانتظار لفترة في نفس الموقع سواء للتفاوض او غيره" data-en="[17] Robbing and intentionally waiting around at the spot to stall is forbidden.">[17] - يُمنع على إي فرد او جماعة السرقة ثم الانتظار لفترة في نفس الموقع سواء للتفاوض او غيره</li>
+                                <li data-ar="[18] - يمنع منعا باتا تدبيل الراديو اثناء اي عمليه اطلاق نار" data-en="[18] Radio channel spamming/stacking during gun fights is forbidden.">[18] - يمنع منعا باتا تدبيل الراديو اثناء اي عمليه اطلاق نار</li>
+                                <li data-ar="[19] - يمنع منعا باتا تبادل اطلاق النار داخل الهيومن لاب بأي شكل من الأشكال وتحت أي ظرف كان" data-en="[19] Gunfights inside Humane Labs are strictly prohibited under any circumstance.">[19] - يمنع منعا باتا تبادل اطلاق النار داخل الهيومن لاب بأي شكل من الأشكال وتحت أي ظرف كان</li>
+                                <li data-ar="[20] - يمنع منعا باتا طلب على الرهينه اي مبلغ مادي ويحق لك طلب واحد على كل رهينة" data-en="[20] Demanding money for hostages is forbidden. Only 1 standard non-monetary demand per hostage.">[20] - يمنع منعا باتا طلب على الرهينه اي مبلغ مادي ويحق لك طلب واحد على كل رهينة</li>
+                                <li data-ar="[21] - في حال تم اسقاطك يمنع تحديث او اعطاء كول اوت ب اي طريقة كانت" data-en="[21] Giving callouts or info while down/unconscious is strictly forbidden.">[21] - في حال تم اسقاطك يمنع تحديث او اعطاء كول اوت ب اي طريقة كانت</li>
+                                <li data-ar="[22] - يجب عليك قبل ‏بدأ السرقة التخطيط لها و وضع لها خطة محكمه" data-en="[22] Proper planning and solid escape strategy is required before starting a robbery.">[22] - يجب عليك قبل ‏بدأ السرقة التخطيط لها و وضع لها خطة محكمه</li>
+                                <li data-ar="[23] - حد افراد العصابة داخل السيرفر 20 عضو فقط" data-en="[23] Official roster limit for any gang is 20 members max.">[23] - حد افراد العصابة داخل السيرفر 20 عضو فقط</li>
+                                <li data-ar="[24] - يمنع افتعال فايت دون سبب وقد تصل عقوبتها الباند نهائي" data-en="[24] Baiting or starting fights without strong valid reasons leads to a permanent ban.">[24] - يمنع افتعال فايت دون سبب وقد تصل عقوبتها الباند نهائي</li>
+                                <li data-ar="[25] - الحد الأعلى للرهائن هو 3 رهائن فقط لجميع السرقات ويمنع منعًا باتًا الزيادة عن هذا العدد" data-en="[25] Maximum limit of hostages is 3 for all types of robberies.">[25] - الحد الأعلى للرهائن هو 3 رهائن فقط لجميع السرقات ويمنع منعًا باتًا الزيادة عن هذا العدد</li>
+                                <li data-ar="[26] - ييمنع منعاً باتاً في حال علاج شخص بالميدكت خطفه او اسقاطه مره اخرى" data-en="[26] Kidnapping or downing someone right after healing them with a medkit is forbidden.">[26] - ييمنع منعاً باتاً في حال علاج شخص بالميدكت خطفه او اسقاطه مره اخرى</li>
+                                <li data-ar="[27] - يمنع استخدام أي ايموت في أي حالة شوت فاير بأي شكل من الأشكال," data-en="[27] Using any emotes during active gunfights is strictly prohibited.">[27] - يمنع استخدام أي ايموت في أي حالة شوت فاير بأي شكل من الأشكال,</li>
+                                <li data-ar="[28] - اثناء عملية النصب يمنع منعًا باتًا الحلف مهما كان السبب" data-en="[28] Swearing/Oaths (الحلف) during scamming processes is completely forbidden.">[28] - اثناء عملية النصب يمنع منعًا باتًا الحلف مهما كان السبب</li>
+                                <li data-ar="[29] - لايحق لك قتل الشخص بعد ان تنصب عليه بحجة النسيان" data-en="[29] You cannot kill a player after scamming them under the excuse of forgetting.">[29] - لايحق لك قتل الشخص بعد ان تنصب عليه بحجة النسيان</li>
+                                <li data-ar="[30] - في حال نصب عليك شخص يحق لك قتله بشكل مباشر واخذ الغرض الذي تم الاتفاق عليه , ولا يحق لك اخذ اي غرض ثاني او يحقلك اخذ شي بنفس القيمة" data-en="[30] If scammed, you can kill the scammer directly to take the agreed item or equal value.">[30] - في حال نصب عليك شخص يحق لك قتله بشكل مباشر واخذ الغرض الذي تم الاتفاق عليه , ولا يحق لك اخذ اي غرض ثاني او يحقلك اخذ شي بنفس القيمة</li>
+                                <li data-ar="[31] - يمنع منعا باتا سرقة السيارات الخاصة باي شكل من الاشكال" data-en="[31] Stealing personal/donated player vehicles is strictly forbidden.">[31] - يمنع منعا باتا سرقة السيارات الخاصة باي شكل من الاشكال</li>
+                                <li data-ar="[32] - يمنع منعا باتا سرقة الهيلي باي شكل من الاشكال" data-en="[32] Stealing helicopters under any form is strictly forbidden.">[32] - يمنع منعا باتا سرقة الهيلي باي شكل من الاشكال</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span data-en="<i class='fas fa-crosshairs'></i> Robbery Limits & Police Units" data-ar="<i class='fas fa-crosshairs'></i> أعداد السرقات واستجابة الشرطة"><i class="fas fa-crosshairs"></i> أعداد السرقات واستجابة الشرطة</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            
+                            <h4 style="color: var(--primary-color); margin-bottom: 10px;" data-en="Robberies (Hostage Optional)" data-ar="سرقات لا تشترط وجود رهينة">سرقات لا تشترط وجود رهينة</h4>
+                            <table class="robbery-table">
+                                <tr>
+                                    <th data-en="Robbery Type" data-ar="نوع السرقة">نوع السرقة</th>
+                                    <th data-en="Criminals" data-ar="المجرمين">المجرمين</th>
+                                    <th data-en="Required Police" data-ar="الوحدات المباشرة (الشرطة)">الوحدات المباشرة (الشرطة)</th>
+                                </tr>
+                                <tr><td>Store Robbery</td><td>1 - 3</td><td>5</td></tr>
+                                <tr><td>ATM Robbery</td><td>1 - 3</td><td>5</td></tr>
+                                <tr><td>House Robbery</td><td>1 - 4</td><td>6</td></tr>
+                                <tr><td>Truck Robbery</td><td>2 - 4</td><td>6</td></tr>
+                                <tr><td>Police Staff House</td><td>2 - 5</td><td>7</td></tr>
+                            </table>
+
+                            <h4 style="color: var(--primary-color); margin-bottom: 10px;" data-en="Robberies (Hostage Mandatory)" data-ar="سرقات (يجب جلب رهينة)">سرقات (يجب جلب رهينة)</h4>
+                            <table class="robbery-table">
+                                <tr>
+                                    <th data-en="Robbery Type" data-ar="نوع السرقة">نوع السرقة</th>
+                                    <th data-en="Criminals" data-ar="المجرمين">المجرمين</th>
+                                    <th data-en="Required Police" data-ar="الوحدات المباشرة (الشرطة)">الوحدات المباشرة (الشرطة)</th>
+                                </tr>
+                                <tr><td>DigitalDen Robbery</td><td>2 - 5</td><td>7</td></tr>
+                                <tr><td>Laundromat Robbery</td><td>2 - 5</td><td>7</td></tr>
+                                <tr><td>Cash Exchange Robbery</td><td>3 - 6</td><td>8</td></tr>
+                                <tr><td>Fleeca Robbery</td><td>3 - 6</td><td>8</td></tr>
+                                <tr><td>Jewelry Robbery</td><td>3 - 7</td><td>9</td></tr>
+                                <tr><td>Bobcat Robbery</td><td>3 - 7</td><td>9</td></tr>
+                                <tr><td>Blane County Robbery</td><td>4 - 7</td><td>9</td></tr>
+                                <tr><td>Maze Bank</td><td>5 - 10</td><td>12</td></tr>
+                            </table>
+
+                            <div style="background: rgba(255, 183, 3, 0.1); padding: 15px; border-radius: 8px; text-align: center; margin-top: 15px;">
+                                <strong style="color: var(--primary-color); font-size: 1.1rem;" data-en="Open Scenarios Limits" data-ar="الحالات المفتوحة">الحالات المفتوحة</strong><br>
+                                <span style="color: var(--text-muted);" data-en="For Players: 7 MAX | For Police: 11 MAX" data-ar="الحد الأعلى للمجرمين: 7 | الحد الأعلى للشرطة: 11">الحد الأعلى للمجرمين: 7 | الحد الأعلى للشرطة: 11</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        
+        <section id="store">
+            <h2 class="section-title" data-en="Server Store" data-ar="متجر السيرفر">متجر السيرفر</h2>
+            <p class="section-subtitle" style="margin: 0 auto 2rem auto; text-align: center;" data-en="Support the server and get premium features." data-ar="ادعم السيرفر واحصل على مميزات حصرية خاصة بك.">ادعم السيرفر واحصل على مميزات حصرية خاصة بك.</p>
+            
+            <div class="store-tabs">
+                <button class="store-tab active" onclick="switchStoreTab('carsTab')" data-en="Cars Section" data-ar="قسم السيارات">قسم السيارات</button>
+                <button class="store-tab" onclick="switchStoreTab('hqTab')" data-en="Headquarters (HQ)" data-ar="قسم المقرات">قسم المقرات</button>
+                <button class="store-tab" onclick="switchStoreTab('priorityTab')" data-en="Queue Priority" data-ar="قسم الأولوية">قسم الأولوية</button>
+            </div>
+
+            <div id="carsTab" class="store-content active">
+                <h3 class="tier-title" data-en="Tier 1: Practical Cars" data-ar="الفئة الأولى: سيارات عملية">الفئة الأولى: سيارات عملية</h3>
+                <div class="store-grid">
+                    <div class="store-card">
+                        <div class="package-name">Dodge Charger</div>
+                        <div class="package-price">$15</div>
+                        <ul class="package-features">
+                            <li data-en="Balanced Speed & Handling" data-ar="سرعة وتحكم متوازن">سرعة وتحكم متوازن</li>
+                            <li data-en="Custom Exterior Tuning" data-ar="تعديل خارجي مخصص">تعديل خارجي مخصص</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Dodge Charger', 15)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card">
+                        <div class="package-name">Ford Crown Victoria</div>
+                        <div class="package-price">$10</div>
+                        <ul class="package-features">
+                            <li data-en="High Durability" data-ar="قدرة تحمل عالية للصدمات">قدرة تحمل عالية للصدمات</li>
+                            <li data-en="Classic Look" data-ar="مظهر كلاسيكي فخم">مظهر كلاسيكي فخم</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Ford Crown Victoria', 10)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card">
+                        <div class="package-name">Toyota Camry</div>
+                        <div class="package-price">$8</div>
+                        <ul class="package-features">
+                            <li data-en="Excellent Fuel Economy" data-ar="اقتصادية جداً في الوقود">اقتصادية جداً في الوقود</li>
+                            <li data-en="Smooth Daily Drive" data-ar="مثالية للقيادة اليومية">مثالية للقيادة اليومية</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Toyota Camry', 8)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                </div>
+
+                <h3 class="tier-title" data-en="Tier 2: Sports Cars" data-ar="الفئة الثانية: سيارات رياضية">الفئة الثانية: سيارات رياضية</h3>
+                <div class="store-grid">
+                    <div class="store-card">
+                        <div class="package-name">Dodge Challenger</div>
+                        <div class="package-price">$30</div>
+                        <ul class="package-features">
+                            <li data-en="High Torque V8" data-ar="عزم دوران قوي وتسارع عالي">عزم دوران قوي وتسارع عالي</li>
+                            <li data-en="Aggressive Engine Sound" data-ar="صوت محرك رياضي مرعب">صوت محرك رياضي مرعب</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Dodge Challenger', 30)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card">
+                        <div class="package-name">BMW M5</div>
+                        <div class="package-price">$35</div>
+                        <ul class="package-features">
+                            <li data-en="Top Tier Handling" data-ar="ثبات خيالي على المنعطفات">ثبات خيالي على المنعطفات</li>
+                            <li data-en="Luxury Interior" data-ar="فخامة داخلية وتصميم عصري">فخامة داخلية وتصميم عصري</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('BMW M5', 35)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card">
+                        <div class="package-name">Ford Mustang GT</div>
+                        <div class="package-price">$28</div>
+                        <ul class="package-features">
+                            <li data-en="Perfect Drift Control" data-ar="تحكم ممتاز في الانجراف (درفت)">تحكم ممتاز في الانجراف (درفت)</li>
+                            <li data-en="Custom Bodykits" data-ar="تعديلات هيكل خارجية مميزة">تعديلات هيكل خارجية مميزة</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Ford Mustang GT', 28)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                </div>
+
+                <h3 class="tier-title" data-en="Tier 3: Supercars" data-ar="الفئة الثالثة: سيارات خارقة">الفئة الثالثة: سيارات خارقة</h3>
+                <div class="store-grid">
+                    <div class="store-card">
+                        <div class="package-name">Nissan GTR R35</div>
+                        <div class="package-price">$60</div>
+                        <ul class="package-features">
+                            <li data-en="Insane Launch Control" data-ar="انطلاقة صاروخية بدفع رباعي">انطلاقة صاروخية بدفع رباعي</li>
+                            <li data-en="Full Race Tuning" data-ar="تعديلات سباق كاملة متاحة">تعديلات سباق كاملة متاحة</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Nissan GTR R35', 60)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card">
+                        <div class="package-name">Bugatti Chiron</div>
+                        <div class="package-price">$100</div>
+                        <ul class="package-features">
+                            <li data-en="Highest Top Speed" data-ar="أعلى سرعة قصوى في السيرفر">أعلى سرعة قصوى في السيرفر</li>
+                            <li data-en="Exclusive Status" data-ar="هيبة حصرية وتصميم نادر">هيبة حصرية وتصميم نادر</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Bugatti Chiron', 100)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card">
+                        <div class="package-name">Lamborghini Huracan</div>
+                        <div class="package-price">$80</div>
+                        <ul class="package-features">
+                            <li data-en="Exotic Design" data-ar="تصميم هجومي جذاب للغاية">تصميم هجومي جذاب للغاية</li>
+                            <li data-en="Lightning Acceleration" data-ar="تسارع خاطف لا يضاهى">تسارع خاطف لا يضاهى</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Lamborghini Huracan', 80)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="hqTab" class="store-content">
+                <h3 class="tier-title" data-en="Properties & Bases" data-ar="الأملاك والمقرات">الأملاك والمقرات</h3>
+                <div class="store-grid">
+                    <div class="store-card">
+                        <div class="package-name" data-en="Small House HQ" data-ar="مقر منزل صغير">مقر منزل صغير</div>
+                        <div class="package-price">$40</div>
+                        <ul class="package-features">
+                            <li data-en="3 Car Garage" data-ar="كراج يتسع لـ 3 سيارات">كراج يتسع لـ 3 سيارات</li>
+                            <li data-en="Basic Storage" data-ar="مساحة تخزين أساسية">مساحة تخزين أساسية</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Small House HQ', 40)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card">
+                        <div class="package-name" data-en="Medium Villa" data-ar="فيلا متوسطة">فيلا متوسطة</div>
+                        <div class="package-price">$70</div>
+                        <ul class="package-features">
+                            <li data-en="6 Car Garage" data-ar="كراج يتسع لـ 6 سيارات">كراج يتسع لـ 6 سيارات</li>
+                            <li data-en="Private Gate" data-ar="بوابة إلكترونية خاصة">بوابة إلكترونية خاصة</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Medium Villa', 70)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card">
+                        <div class="package-name" data-en="Luxury Gang Mansion" data-ar="قصر عصابة فاخر">قصر عصابة فاخر</div>
+                        <div class="package-price">$150</div>
+                        <ul class="package-features">
+                            <li data-en="Helipad Included" data-ar="يحتوي على مهبط طائرات هيلي">يحتوي على مهبط طائرات هيلي</li>
+                            <li data-en="Huge Armory Room" data-ar="غرفة أسلحة وتخزين ضخمة">غرفة أسلحة وتخزين ضخمة</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Luxury Gang Mansion', 150)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="priorityTab" class="store-content">
+                <h3 class="tier-title" data-en="Server Entry Priority" data-ar="أولوية الدخول للسيرفر">أولوية الدخول للسيرفر</h3>
+                <div class="store-grid">
+                    <div class="store-card" style="border-color: #FFD700;">
+                        <div class="package-name" style="color: #FFD700;" data-en="Gold Priority" data-ar="أولوية ذهبية (الأقوى)">أولوية ذهبية (الأقوى)</div>
+                        <div class="package-price">$30</div>
+                        <ul class="package-features">
+                            <li data-en="Instant Queue Skip" data-ar="تخطي كامل لطابور الانتظار">تخطي كامل لطابور الانتظار</li>
+                            <li data-en="Premium Discord Role" data-ar="رتبة مميزة خاصة بالديسكورد">رتبة مميزة خاصة بالديسكورد</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Gold Priority', 30)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card" style="border-color: #C0C0C0;">
+                        <div class="package-name" style="color: #C0C0C0;" data-en="Silver Priority" data-ar="أولوية فضية (المتوسطة)">أولوية فضية (المتوسطة)</div>
+                        <div class="package-price">$20</div>
+                        <ul class="package-features">
+                            <li data-en="High Queue Position" data-ar="مركز متقدم جداً في الطابور">مركز متقدم جداً في الطابور</li>
+                            <li data-en="Fast Server Entry" data-ar="دخول سريع خلال دقائق">دخول سريع خلال دقائق</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Silver Priority', 20)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                    <div class="store-card" style="border-color: #cd7f32;">
+                        <div class="package-name" style="color: #cd7f32;" data-en="Bronze Priority" data-ar="أولوية برونزية (الأضعف)">أولوية برونزية (الأضعف)</div>
+                        <div class="package-price">$10</div>
+                        <ul class="package-features">
+                            <li data-en="Skip Half the Queue" data-ar="تجاوز نصف عدد المنتظرين">تجاوز نصف عدد المنتظرين</li>
+                            <li data-en="Economic Choice" data-ar="خيار اقتصادي ومفيد للزحام">خيار اقتصادي ومفيد للزحام</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Bronze Priority', 10)" data-en="Add to Cart" data-ar="إضافة للسلة">إضافة للسلة</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="cart-panel" id="cartPanel">
+        <div class="cart-header">
+            <span data-en="Shopping Cart" data-ar="سلة المشتريات">سلة المشتريات</span>
+            <i class="fas fa-shopping-cart" style="color: var(--primary-color);"></i>
+        </div>
+        <div class="cart-items" id="cartItems">
+            </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span data-en="Total:" data-ar="المجموع:">المجموع:</span>
+                <span id="cartTotalSum" style="color: var(--primary-color);">$0</span>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; padding: 12px;" onclick="checkout()" data-en="Proceed to Checkout" data-ar="إتمام عملية الدفع">إتمام عملية الدفع</button>
+        </div>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll("section");
+        const navLinks = document.querySelectorAll(".nav-link");
+        const navWrapper = document.getElementById("navRoll");
+        const cursor = document.getElementById("customCursor");
+
+        // --- 1. سكريبت الفأرة المشعة المخصصة ---
+        document.addEventListener("mousemove", (e) => {
+            cursor.style.left = e.clientX + "px";
+            cursor.style.top = e.clientY + "px";
+        });
+
+        // تحديث تأثير الماوس للعناصر القابلة للتفاعل (يشمل الأزرار الجديدة)
+        function refreshInteractiveCursors() {
+            const interactiveElements = document.querySelectorAll("a, button, .accordion-header, .store-tab, .remove-btn");
+            interactiveElements.forEach(el => {
+                // تجنب تكرار الحدث
+                el.removeEventListener("mouseenter", addHoverClass);
+                el.removeEventListener("mouseleave", removeHoverClass);
+                
+                el.addEventListener("mouseenter", addHoverClass);
+                el.addEventListener("mouseleave", removeHoverClass);
+            });
+        }
+        
+        function addHoverClass() { cursor.classList.add("hovered"); }
+        function removeHoverClass() { cursor.classList.remove("hovered"); }
+
+        refreshInteractiveCursors();
+
+        // --- 2. سكريبت التمرير التلقائي للشريط عند حركة الماوس يمين ويسار ---
+        let scrollInterval;
+        navWrapper.addEventListener("mousemove", (e) => {
+            const rect = navWrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left; 
+            const width = rect.width;
+            const zoneSize = width * 0.25; 
+            
+            clearInterval(scrollInterval);
+
+            if (x < zoneSize) {
+                const speedFactor = (zoneSize - x) / zoneSize;
+                scrollInterval = setInterval(() => { navWrapper.scrollLeft -= 6 * speedFactor; }, 10);
+            } else if (x > width - zoneSize) {
+                const speedFactor = (x - (width - zoneSize)) / zoneSize;
+                scrollInterval = setInterval(() => { navWrapper.scrollLeft += 6 * speedFactor; }, 10);
+            }
+        });
+        navWrapper.addEventListener("mouseleave", () => clearInterval(scrollInterval));
+
+        // --- 3. سكريبت المراقبة والتنقل التلقائي ---
+        window.addEventListener("scroll", () => {
+            let current = "";
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 150) { current = section.getAttribute("id"); }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove("active");
+                if (link.getAttribute("href").includes(current)) {
+                    link.classList.add("active");
+                    // التمرير التلقائي للقائمة ليبقى العنصر النشط مرئي
+                    link.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
+            });
+        });
+
+        // --- 4. سكريبت القوائم المنسدلة (Accordion) للقوانين ---
+        const accordionItems = document.querySelectorAll('.accordion-item');
+        accordionItems.forEach(item => {
+            const header = item.querySelector('.accordion-header');
+            header.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                accordionItems.forEach(acc => {
+                    acc.classList.remove('active');
+                    acc.querySelector('.accordion-content').style.maxHeight = null;
+                });
+                
+                if (!isActive) {
+                    item.classList.add('active');
+                    const content = item.querySelector('.accordion-content');
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        });
+
+        // --- 5. سكريبت تبديل أقسام المتجر ---
+        function switchStoreTab(tabId) {
+            document.querySelectorAll('.store-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.store-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            refreshInteractiveCursors();
+        }
+
+        // --- 6. نظام سلة المشتريات ---
+        let cart = [];
+        
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartDisplay();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartPanel = document.getElementById('cartPanel');
+            const cartItemsContainer = document.getElementById('cartItems');
+            const cartTotalSum = document.getElementById('cartTotalSum');
+            
+            if (cart.length === 0) {
+                cartPanel.style.display = 'none';
+                return;
+            }
+            
+            cartPanel.style.display = 'flex';
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price;
+                cartItemsContainer.innerHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <span>${item.name}</span>
+                            <span class="cart-item-price">$${item.price}</span>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${index})"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `;
+            });
+
+            cartTotalSum.innerText = `$${total}`;
+            refreshInteractiveCursors(); // تحديث الماوس لتشمل أزرار الحذف الجديدة
+        }
+
+        function checkout() {
+            if (cart.length === 0) return;
+            const message = currentLang === 'ar' 
+                ? "سيتم تحويلك الآن لصفحة الدفع الآمنة الخاصة بسيرفر Law Town." 
+                : "You will now be redirected to the secure Law Town payment gateway.";
+            alert(message);
+            // هنا يمكنك ربط الكود بـ API الدفع الفعلي (مثل Tebex)
+            cart = [];
+            updateCartDisplay();
+        }
+
+        // --- 7. تغيير اللغات والخطوط ---
+        let currentLang = 'en';
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', currentLang);
+            document.getElementById('langToggleBtn').innerText = currentLang === 'ar' ? 'EN' : 'AR';
+            
+            document.body.style.fontFamily = currentLang === 'ar' ? "'Tajawal', sans-serif" : "'Poppins', sans-serif";
+
+            // تبديل كل النصوص المدعومة بـ data-en و data-ar
+            const elementsToTranslate = document.querySelectorAll('[data-en][data-ar]');
+            elementsToTranslate.forEach(el => { el.innerHTML = el.getAttribute(`data-${currentLang}`); });
+            
+            // إصلاح اتجاه نصوص القوانين
+            const accordionContent = document.querySelector('.rules-accordion');
+            if(accordionContent) {
+                accordionContent.style.textAlign = currentLang === 'ar' ? 'right' : 'left';
+            }
+        }
+    </script>
+</body>
+</html>
